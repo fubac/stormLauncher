@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
+# Decpendencies: webpy and pyusb (1.0)
+#
 #  pyusb setup:
-#  * install libusb
-#  * download the pyusb package
+#  * install libusb (http://libusb.sourceforge.net/)
+#  * download the pyusb package (http://pyusb.sf.net/)
 #  * use pythons distutils to install:
 #    $> python setup.py install
 #  source: http://wiki.erazor-zone.de/wiki%3aprojects%3apython%3apyusb%3asetup%3alinux
@@ -10,7 +12,7 @@
 ######
 
 
-import web
+import web # webpy
 import usb.core # pyusb
 
 launcherDev = usb.core.find(idVendor=0x2123, idProduct=0x1010)
@@ -21,6 +23,7 @@ if launcherDev.is_kernel_driver_active(0) is True:
 launcherDev.set_configuration()
 
 urls = (
+    '/', 'index',
     '/cmd/up', 'turretUp',
     '/cmd/down', 'turretDown',
     '/cmd/left', 'turretLeft',
@@ -29,7 +32,87 @@ urls = (
     '/cmd/fire', 'turretFire',
 )
 
+
 app = web.application(urls, globals())
+
+class index:
+    def GET(self):
+        return """
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Rocket Launcher</title>
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<style type="text/css">
+#left {
+    position: absolute;
+    left: 0px;
+    top: 20px;
+    border-right: 20px solid black;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+}
+#right {
+    position: absolute;
+    left: 60px;
+    top:  20px;
+    border-left: 20px solid black;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+}
+#up {
+    position: absolute;
+    left: 20px;
+    top: 0px;
+    width: 0; 
+    height: 0; 
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 20px solid black;
+}
+#down {
+    position: absolute;
+    left: 20px;
+    top: 60px;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 20px solid black;
+}
+#fire {
+    position: absolute;
+    left: 25px;
+    top: 25px;
+    border-radius: 100%;
+    width: 30px;
+    height: 30px;
+    color:red;
+    background:red;
+}
+
+
+</style>
+</head>
+<body>
+<p id="left"/>
+<p id="right"/>
+<p id="up"/>
+<p id="down"/>
+<p id="fire"/>
+<script>
+call = function(cmd) {
+   $.get( \""""+web.ctx.home+"""/cmd/"+cmd, function() {})
+}
+$( "#left" ).mouseup(function(){call("stop")} ).mousedown(function(){ call($(this).attr('id')) } );
+$( "#right" ).mouseup(function(){call("stop")} ).mousedown(function(){ call($(this).attr('id')) } );
+$( "#up" ).mouseup(function(){call("stop")} ).mousedown(function(){ call($(this).attr('id')) } );
+$( "#down" ).mouseup(function(){call("stop")} ).mousedown(function(){ call($(this).attr('id')) } );
+$( "#fire" ).mousedown(function(){ call($(this).attr('id')) } );
+
+</script>
+</body>
+</html>
+"""
 
 class turretUp:
     def GET(self):
