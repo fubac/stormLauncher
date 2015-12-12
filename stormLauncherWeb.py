@@ -108,6 +108,34 @@ $( "#right" ).mouseup(function(){call("stop")} ).mousedown(function(){ call($(th
 $( "#up" ).mouseup(function(){call("stop")} ).mousedown(function(){ call($(this).attr('id')) } );
 $( "#down" ).mouseup(function(){call("stop")} ).mousedown(function(){ call($(this).attr('id')) } );
 $( "#fire" ).mousedown(function(){ call($(this).attr('id')) } );
+$( "body" ).keydown(function(event) {
+    if(event.which == 37) {
+      event.preventDefault();
+      call('left');
+    }
+    if(event.which == 38) {
+      event.preventDefault();
+      call('up');
+    }
+    if(event.which == 39) {
+      event.preventDefault();
+      call('right');
+    }
+    if(event.which == 40) {
+      event.preventDefault();
+      call('down');
+    }
+    if(event.which == 13) {
+      event.preventDefault();
+      call('fire');
+    }
+});
+$( "body" ).keyup(function(event) {
+    if(event.which == 37 || event.which == 38 || event.which == 39 || event.which == 40 || event.which == 13) {
+      event.preventDefault();
+      call('stop');
+    }
+});
 
 </script>
 </body>
